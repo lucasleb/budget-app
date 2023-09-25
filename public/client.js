@@ -35,6 +35,51 @@ document.addEventListener('DOMContentLoaded', () => {
         categoryNameInput.value = '';
       });
     });
-  });
 
-  
+    // Fetch existing categories and populate the dropdown
+  fetch('/api/categories')
+    .then(response => response.json())
+    .then(data => {
+      const categoryDropdown = document.getElementById('expense-category');
+      data.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.id;
+        option.textContent = category.name;
+        categoryDropdown.appendChild(option);
+      });
+    });
+
+  // Handle form submission to add a new expense
+  const expenseForm = document.getElementById('expense-form');
+  const expenseList = document.getElementById('expense-list');
+
+  expenseForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const price = document.getElementById('expense-price').value;
+    const date = document.getElementById('expense-date').value;
+    const categoryId = document.getElementById('expense-category').value;
+    const description = document.getElementById('expense-description').value;
+
+    fetch('/api/expenses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ price, date, categoryId, description })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const li = document.createElement('li');
+      li.textContent = `${data.id}: $${price}, Date: ${date}, Category: ${categoryId}, Description: ${description}`;
+      expenseList.appendChild(li);
+      
+      // Clear form fields
+      document.getElementById('expense-price').value = '';
+      document.getElementById('expense-date').value = '';
+      document.getElementById('expense-category').value = '';
+      document.getElementById('expense-description').value = '';
+    });
+  });
+});
+

@@ -11,6 +11,8 @@ app.use(express.static('public'));
 // Routes for categories
 const categoriesRoutes = require('./routes/categories');
 app.use('/api/categories', categoriesRoutes);
+const expensesRoutes = require('./routes/expenses');
+app.use('/api/expenses', expensesRoutes);
 
 const port = process.env.PORT || 3000;
 

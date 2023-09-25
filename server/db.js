@@ -10,6 +10,18 @@ db.serialize(() => {
       name TEXT
     )
   `);
+
+  // Create an "expenses" table if it doesn't exist
+  db.run(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      price REAL,
+      date DATE,
+      categoryId INTEGER,
+      description TEXT,
+      FOREIGN KEY (categoryId) REFERENCES categories (id)
+    )
+  `);
 });
 
 module.exports = db;

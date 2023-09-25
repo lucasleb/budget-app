@@ -14,6 +14,20 @@
   <h2>Existing Categories</h2>
   <ul id="category-list"></ul>
 
+  <h2>Add Expense</h2>
+  <form id="expense-form">
+    <input type="text" id="expense-price" placeholder="Price" required>
+    <input type="date" id="expense-date" required>
+    <select id="expense-category">
+      <!-- Categories will be populated dynamically -->
+    </select>
+    <input type="text" id="expense-description" placeholder="Description">
+    <button type="submit">Add Expense</button>
+  </form>
+  
+  <h2>Expenses</h2>
+  <ul id="expense-list"></ul>  
+
   <script src="/client.js"></script>
 </body>
 </html>
