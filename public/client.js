@@ -1,53 +1,59 @@
 // public/client.js
 document.addEventListener('DOMContentLoaded', () => {
-    const categoryForm = document.getElementById('category-form');
-    const categoryNameInput = document.getElementById('category-name');
-    const categoryList = document.getElementById('category-list');
-  
-    // Fetch existing categories and display them
+  const categoryForm = document.getElementById('category-form');
+  const categoryNameInput = document.getElementById('category-name');
+  const categoryList = document.getElementById('category-list');
+
+  // Function to create a category list item with a delete button
+  function createCategoryListItem(category) {
+    const li = document.createElement('li');
+    li.id = `category-${category.id}`;
+    li.textContent = category.name;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.classList.add('delete-category');
+    deleteButton.dataset.categoryId = category.id;
+
+    li.appendChild(deleteButton);
+    return li;
+  }
+
+  // Function to fetch and display categories
+  function fetchAndDisplayCategories() {
     fetch('/api/categories')
       .then(response => response.json())
       .then(data => {
+        categoryList.innerHTML = ''; // Clear the list before adding categories
         data.forEach(category => {
-          const li = document.createElement('li');
-          li.textContent = category.name;
-          categoryList.appendChild(li);
+          const categoryListItem = createCategoryListItem(category);
+          categoryList.appendChild(categoryListItem);
         });
       });
-  
-    // Handle form submission to create a new category
-    categoryForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const name = categoryNameInput.value;
-  
-      fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name })
-      })
+  }
+
+  // Fetch and display categories when the page loads
+  fetchAndDisplayCategories();
+
+  // Handle form submission to create a new category
+  categoryForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = categoryNameInput.value;
+
+    fetch('/api/categories', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name })
+    })
       .then(response => response.json())
       .then(data => {
-        const li = document.createElement('li');
-        li.textContent = data.id + ': ' + name;
-        categoryList.appendChild(li);
+        // Update the category list after creating a new category
+        fetchAndDisplayCategories();
         categoryNameInput.value = '';
       });
-    });
-
-    // Fetch existing categories and populate the dropdown
-  fetch('/api/categories')
-    .then(response => response.json())
-    .then(data => {
-      const categoryDropdown = document.getElementById('expense-category');
-      data.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category.id;
-        option.textContent = category.name;
-        categoryDropdown.appendChild(option);
-      });
-    });
+  });
 
   // Handle form submission to add a new expense
   const expenseForm = document.getElementById('expense-form');
@@ -81,5 +87,37 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('expense-description').value = '';
     });
   });
+
+  // Function to delete a category
+  function deleteCategory(categoryId) {
+    fetch(`/api/categories/${categoryId}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      if (response.status === 200) {
+        // If deletion is successful, remove the category from the UI
+        const categoryToRemove = document.getElementById(`category-${categoryId}`);
+        if (categoryToRemove) {
+          categoryToRemove.remove();
+        }
+      }
+    })
+    .catch(error => console.error('Error deleting category:', error));
+  }
+
+  // ...
+
+  // Event listener for deleting a category
+  categoryList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('delete-category')) {
+      const categoryId = event.target.dataset.categoryId;
+      if (categoryId) {
+        if (confirm('Are you sure you want to delete this category and its associated expenses?')) {
+          deleteCategory(categoryId);
+        }
+      }
+    }
+  });
+
 });
 

@@ -30,4 +30,26 @@ router.get('/', (req, res) => {
   });
 });
 
+// Delete a category and associated expenses
+router.delete('/:categoryId', (req, res) => {
+    const categoryId = req.params.categoryId;
+  
+    // First, delete associated expenses
+    const deleteExpensesSql = 'DELETE FROM expenses WHERE categoryId = ?';
+    db.run(deleteExpensesSql, [categoryId], (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+  
+      // Then, delete the category
+      const deleteCategorySql = 'DELETE FROM categories WHERE id = ?';
+      db.run(deleteCategorySql, [categoryId], (err) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.sendStatus(200);
+      });
+    });
+  });
+
 module.exports = router;
