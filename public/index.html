@@ -8,25 +8,51 @@
 <body>
   <h1>Budget Categories</h1>
   <form id="category-form">
-    <input type="text" id="category-name" placeholder="Enter a category name" required>
+    <input type="text" id="category-name" placeholder="Enter an expense category" required>
     <button type="submit">Add Category</button>
   </form>
-  <h2>Existing Categories</h2>
+  <h2>Existing Expense Categories</h2>
   <ul id="category-list"></ul>
+
+  <!-- Add Income Categories -->
+  <h2>Income Categories</h2>
+  <form id="income-category-form">
+    <input type="text" id="income-category-name" placeholder="Enter an income category" required>
+    <button type="submit">Add Income Category</button>
+  </form>
+  <h2>Existing Income Categories</h2>
+  <ul id="income-category-list"></ul>
+  <!-- End of Income Categories -->
 
   <h2>Add Expense</h2>
   <form id="expense-form">
     <input type="text" id="expense-price" placeholder="Price" required>
     <input type="date" id="expense-date" required>
     <select id="expense-category">
-      <!-- Categories will be populated dynamically -->
+      <!-- Expense Categories will be populated dynamically -->
     </select>
     <input type="text" id="expense-description" placeholder="Description">
     <button type="submit">Add Expense</button>
   </form>
   
   <h2>Expenses</h2>
-  <ul id="expense-list"></ul>  
+  <ul id="expense-list"></ul>
+
+  <!-- Add Income -->
+  <h2>Add Income</h2>
+  <form id="income-form">
+    <input type="text" id="income-amount" placeholder="Amount" required>
+    <input type="date" id="income-date" required>
+    <select id="income-category">
+      <!-- Income Categories will be populated dynamically -->
+    </select>
+    <input type="text" id="income-description" placeholder="Description">
+    <button type="submit">Add Income</button>
+  </form>
+  
+  <h2>Incomes</h2>
+  <ul id="income-list"></ul>
+  <!-- End of Income -->
 
   <script src="/client.js"></script>
 </body>

@@ -3,6 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoryForm = document.getElementById('category-form');
   const categoryNameInput = document.getElementById('category-name');
   const categoryList = document.getElementById('category-list');
+  const incomeForm = document.getElementById('income-form');
+  const incomeList = document.getElementById('income-list');
+
+
 
   // Function to create a category list item with a delete button
   function createCategoryListItem(category) {
@@ -118,6 +122,116 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Fetch existing income categories and display them
+  function fetchAndDisplayIncomeCategories() {
+    fetch('/api/incomes/categories')
+      .then(response => response.json())
+      .then(data => {
+        // Populate a dropdown or list with income categories
+        // Similar to how you populated expense categories
+      });
+  }
+
+  // Function to create a list item for income
+  function createIncomeListItem(income) {
+    const li = document.createElement('li');
+    li.id = `income-${income.id}`;
+    li.textContent = `Category: ${income.category}, Amount: $${income.amount}, Date: ${income.date}, Description: ${income.description}`;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.classList.add('delete-income');
+    deleteButton.dataset.incomeId = income.id;
+
+    li.appendChild(deleteButton);
+    return li;
+  }
+
+  // Fetch and display incomes when the page loads
+  function fetchAndDisplayIncomes() {
+    fetch('/api/incomes')
+      .then(response => response.json())
+      .then(data => {
+        const incomeList = document.getElementById('income-list');
+        incomeList.innerHTML = ''; // Clear the list before adding incomes
+        data.forEach(income => {
+          const incomeListItem = createIncomeListItem(income);
+          incomeList.appendChild(incomeListItem);
+        });
+      });
+  }
+
+  // ... (similar code for expenses)
+
+  // Event listener for submitting an income
+  incomeForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const category = document.getElementById('income-category').value;
+    const amount = document.getElementById('income-amount').value;
+    const date = document.getElementById('income-date').value;
+    const description = document.getElementById('income-description').value;
+
+    fetch('/api/incomes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ category, amount, date, description })
+    })
+    .then(response => response.json())
+    .then(data => {
+      const li = createIncomeListItem({
+        id: data.id,
+        category,
+        amount,
+        date,
+        description
+      });
+      const incomeList = document.getElementById('income-list');
+      incomeList.appendChild(li);
+
+      // Clear form fields
+      document.getElementById('income-category').value = '';
+      document.getElementById('income-amount').value = '';
+      document.getElementById('income-date').value = '';
+      document.getElementById('income-description').value = '';
+    });
+  });
+
+  // Function to delete an income
+  function deleteIncome(incomeId) {
+    fetch(`/api/incomes/${incomeId}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      if (response.status === 200) {
+        // If deletion is successful, remove the income from the UI
+        const incomeToRemove = document.getElementById(`income-${incomeId}`);
+        if (incomeToRemove) {
+          incomeToRemove.remove();
+        }
+      }
+    })
+    .catch(error => console.error('Error deleting income:', error));
+  }
+
+  // Event listener for deleting an income
+  incomeList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('delete-income')) {
+      const incomeId = event.target.dataset.incomeId;
+      if (incomeId) {
+        if (confirm('Are you sure you want to delete this income?')) {
+          deleteIncome(incomeId);
+        }
+      }
+    }
+  });
+
+  // Fetch and display income categories and incomes when the page loads
+  fetchAndDisplayIncomeCategories();
+  fetchAndDisplayIncomes();
 
 });
 
